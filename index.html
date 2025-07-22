@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pronunciation Practice - A1 English</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+    }
+    .sentence-box {
+      background: #f0f0f0;
+      padding: 1rem;
+      margin: 1rem 0;
+      font-size: 1.3rem;
+      border-radius: 8px;
+    }
+    button {
+      padding: 0.8rem 1.2rem;
+      margin: 0.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      background-color: #4caf50;
+      color: white;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #spokenText, #feedback {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎧 Pronunciation Practice</h1>
+  <div class="sentence-box" id="target">I have some apples and a bottle of milk.</div>
+  <button onclick="playSentence()">🔊 Listen</button>
+  <button onclick="startRecognition()">🎤 Speak</button>
+  <div id="spokenText">Your sentence: ...</div>
+  <div id="feedback"></div>
+
+  <script>
+    const targetSentence = document.getElementById("target").textContent.toLowerCase();
+
+    function playSentence() {
+      const utterance = new SpeechSynthesisUtterance(targetSentence);
+      utterance.lang = 'en-US';
+      speechSynthesis.speak(utterance);
+    }
+
+    function startRecognition() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.start();
+
+      recognition.onresult = function(event) {
+        const spoken = event.results[0][0].transcript.toLowerCase();
+        document.getElementById("spokenText").textContent = "Your sentence: " + spoken;
+
+        if (spoken === targetSentence) {
+          document.getElementById("feedback").innerHTML = "✅ Great pronunciation!";
+        } else {
+          document.getElementById("feedback").innerHTML = "❌ Not quite. Try again or listen and repeat.";
+        }
+      };
+
+      recognition.onerror = function(event) {
+        document.getElementById("feedback").textContent = "Error: " + event.error;
+      };
+    }
+  </script>
+</body>
+</html>
